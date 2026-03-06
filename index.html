@@ -44,7 +44,6 @@
         
         <div class="relative w-full bg-black aspect-video shadow-md">
             <vturb-smartplayer id="vid-699de0a8f5e86dda40b4cdcc" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer> 
-            <script type="text/javascript" async src="https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js"></script>
         </div>
 
         <div class="bg-white py-3 px-4 border-b border-gray-100 flex items-center justify-center gap-2 relative z-10">
@@ -608,20 +607,46 @@
     </main>
 
    <script>
-    let trackingLoaded = false;
+    // ---------------------------------------------------------
+    // 1. CARREGAMENTO DO VÍDEO (MICRO-DELAY DE 0.8s)
+    // ---------------------------------------------------------
+    let vturbLoaded = false;
+    const loadVturb = () => {
+        if (vturbLoaded) return;
+        vturbLoaded = true;
 
+        const vturbScript = document.createElement('script');
+        vturbScript.src = "https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js";
+        vturbScript.async = true;
+        
+        // Assim que o VTurb terminar de carregar, ele engatilha o delay do Pitch
+        vturbScript.onload = () => {
+            let player = document.querySelector("vturb-smartplayer");
+            if(player) {
+                player.addEventListener("player:ready", function() {
+                    player.displayHiddenElements(3654, [".esconder"], { persist: true });
+                });
+            }
+        };
+        document.head.appendChild(vturbScript);
+    };
+
+    // ---------------------------------------------------------
+    // 2. CARREGAMENTO DO TRACKING (DELAY LONGO DE 2.5s)
+    // ---------------------------------------------------------
+    let trackingLoaded = false;
     const loadTracking = () => {
         if (trackingLoaded) return;
         trackingLoaded = true;
 
-        // 1. Carrega UTMify
+        // UTMify
         const utmScript = document.createElement('script');
         utmScript.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
         utmScript.setAttribute('data-utmify-prevent-subids', '');
         utmScript.async = true;
         document.body.appendChild(utmScript);
 
-        // 2. Carrega Pixels do Facebook
+        // Meta Pixels
         !function(f,b,e,v,n,t,s) {
             if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -635,12 +660,22 @@
         fbq('track', 'PageView');
     };
 
-    // Dispara com interação do usuário OU após 2.5 segundos
+    // ---------------------------------------------------------
+    // 3. GATILHOS DE DISPARO
+    // ---------------------------------------------------------
     const interactions = ['scroll', 'mousemove', 'touchstart', 'click'];
+    
+    // Se o lead interagir (tocar na tela), carrega TUDO imediatamente
     interactions.forEach(event => {
-        window.addEventListener(event, loadTracking, { once: true, passive: true });
+        window.addEventListener(event, () => {
+            loadVturb();
+            loadTracking();
+        }, { once: true, passive: true });
     });
-    setTimeout(loadTracking, 2500);
+
+    // Se o lead não fizer nada, roda nos tempos estipulados
+    setTimeout(loadVturb, 800);   // Vídeo aparece em piscar de olhos
+    setTimeout(loadTracking, 2500); // Rastreamento pesado roda escondido
 </script>
 
 <noscript>
