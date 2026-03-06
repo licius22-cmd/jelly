@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Configuração base do Vite. 
-  // Mantemos simples, apenas para a Cloudflare conseguir ler e publicar o site.
+  plugins: [], // <-- É exatamente dessa linha vazia que a Cloudflare precisa
   build: {
     outDir: 'dist',
   }
