@@ -44,6 +44,7 @@
         
         <div class="relative w-full bg-black aspect-video shadow-md">
             <vturb-smartplayer id="vid-699de0a8f5e86dda40b4cdcc" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer> 
+            <script type="text/javascript" async src="https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js"></script>
         </div>
 
         <div class="bg-white py-3 px-4 border-b border-gray-100 flex items-center justify-center gap-2 relative z-10">
@@ -607,47 +608,38 @@
     </main>
 
    <script>
-    let isLoaded = false;
+    let trackingLoaded = false;
+    const loadTracking = () => {
+        if (trackingLoaded) return;
+        trackingLoaded = true;
 
-    function loadEverything() {
-        if (isLoaded) return;
-        isLoaded = true;
-
-        // 1. CARREGA O VTURB E O DELAY DO PITCH
-        const vturbScript = document.createElement('script');
-        vturbScript.src = "https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js";
-        vturbScript.async = true;
-        vturbScript.onload = () => {
-            let player = document.querySelector("vturb-smartplayer");
-            if(player) {
-                player.addEventListener("player:ready", function() {
-                    player.displayHiddenElements(3654, [".esconder"], { persist: true });
-                });
-            }
-        };
-        document.head.appendChild(vturbScript);
-
-        // 2. CARREGA O UTMIFY
+        // 1. UTMify
         const utmScript = document.createElement('script');
         utmScript.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
         utmScript.setAttribute('data-utmify-prevent-subids', '');
         utmScript.async = true;
         document.body.appendChild(utmScript);
 
-        // 3. CARREGA OS 8 PIXELS DO FACEBOOK
-        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        // 2. Meta Pixels
+        !function(f,b,e,v,n,t,s) {
+            if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)
+        }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
         const pixelIds = ['901335525837933', '1435316934639038', '2157661164979333', '1930652510882312', '1304063911565424', '797801516088163', '885506097636747', '1910035972952167'];
         pixelIds.forEach(id => fbq('init', id));
         fbq('track', 'PageView');
-    }
+    };
 
-    // GATILHOS INSTANTÂNEOS PARA USUÁRIOS REAIS
-    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event => {
-        window.addEventListener(event, loadEverything, { once: true, passive: true });
+    // Dispara assim que o lead rolar a tela, ou limite de 3 segundos
+    const interactions = ['scroll', 'mousemove', 'touchstart', 'click'];
+    interactions.forEach(event => {
+        window.addEventListener(event, loadTracking, { once: true, passive: true });
     });
-    
-    // GATILHO ATRASADO PARA O GOOGLE PAGESPEED (3.5 segundos)
-    setTimeout(loadEverything, 3500);
+    setTimeout(loadTracking, 3000);
 </script>
 
 <noscript>
