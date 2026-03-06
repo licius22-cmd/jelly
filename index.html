@@ -10,29 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    
-    fbq('init', '901335525837933'); // ema ema
-    fbq('init', '1435316934639038'); // romeu e julieta
-    fbq('init', '2157661164979333'); // kobeema
-    fbq('init', '1930652510882312'); // Dayana ramos
-    fbq('init', '1304063911565424'); // Container ema
-    fbq('init', '797801516088163'); // EMAG ING - BM Girafa
-    fbq('init', '885506097636747'); // ajuda t carla 1
-    fbq('init', '1910035972952167'); // ajuda t carla 2
-    
-    fbq('track', 'PageView');
-    </script>
-    
-
     <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
     <link rel="preload" href="https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js" as="script">
     <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
@@ -43,8 +20,6 @@
     <link rel="dns-prefetch" href="https://api.vturb.com.br">
 </head>
 <body class="bg-gray-50 text-gray-900 overflow-x-hidden font-inter">
-    
-    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-subids async defer></script>
 
     <noscript>
         <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=901335525837933&ev=PageView&noscript=1"/>
@@ -648,5 +623,58 @@
             setTimeout(function() { updateViewerCount(); loop(); }, rand);
         }());
     </script>
+
+    <script>
+    // Flag para garantir que o código rode apenas uma vez
+    let scriptsLoaded = false;
+
+    const loadTrackingScripts = () => {
+        if (scriptsLoaded) return;
+        scriptsLoaded = true;
+
+        // 1. Carrega o UTMify de forma assíncrona
+        const utmScript = document.createElement('script');
+        utmScript.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
+        utmScript.setAttribute('data-utmify-prevent-subids', '');
+        utmScript.async = true;
+        utmScript.defer = true;
+        document.body.appendChild(utmScript);
+
+        // 2. Inicializa a Base do Meta Pixel
+        !function(f,b,e,v,n,t,s) {
+            if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)
+        }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+        // 3. Dispara os seus 8 Pixels simultaneamente
+        const pixelIds = [
+            '901335525837933', '1435316934639038', '2157661164979333',
+            '1930652510882312', '1304063911565424', '797801516088163',
+            '885506097636747', '1910035972952167'
+        ];
+        
+        pixelIds.forEach(id => fbq('init', id));
+        fbq('track', 'PageView');
+    };
+
+    // 4. Gatilhos de disparo: Interação do usuário OU timer de 3 segundos
+    const userInteractions = ['scroll', 'mousemove', 'touchstart', 'click'];
+    
+    userInteractions.forEach(event => {
+        window.addEventListener(event, loadTrackingScripts, { once: true, passive: true });
+    });
+
+    // Se o usuário ficar parado olhando a tela sem mexer nada, carrega após 3s
+    setTimeout(loadTrackingScripts, 3000);
+</script>
+
+<noscript>
+    <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=901335525837933&ev=PageView&noscript=1"/>
+</noscript>
+    
 </body>
 </html>
