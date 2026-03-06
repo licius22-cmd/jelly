@@ -607,19 +607,16 @@
     </main>
 
    <script>
-    // ---------------------------------------------------------
-    // 1. CARREGAMENTO DO VÍDEO (MICRO-DELAY DE 0.8s)
-    // ---------------------------------------------------------
-    let vturbLoaded = false;
-    const loadVturb = () => {
-        if (vturbLoaded) return;
-        vturbLoaded = true;
+    let isLoaded = false;
 
+    function loadEverything() {
+        if (isLoaded) return;
+        isLoaded = true;
+
+        // 1. CARREGA O VTURB E O DELAY DO PITCH
         const vturbScript = document.createElement('script');
         vturbScript.src = "https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js";
         vturbScript.async = true;
-        
-        // Assim que o VTurb terminar de carregar, ele engatilha o delay do Pitch
         vturbScript.onload = () => {
             let player = document.querySelector("vturb-smartplayer");
             if(player) {
@@ -629,53 +626,28 @@
             }
         };
         document.head.appendChild(vturbScript);
-    };
 
-    // ---------------------------------------------------------
-    // 2. CARREGAMENTO DO TRACKING (DELAY LONGO DE 2.5s)
-    // ---------------------------------------------------------
-    let trackingLoaded = false;
-    const loadTracking = () => {
-        if (trackingLoaded) return;
-        trackingLoaded = true;
-
-        // UTMify
+        // 2. CARREGA O UTMIFY
         const utmScript = document.createElement('script');
         utmScript.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
         utmScript.setAttribute('data-utmify-prevent-subids', '');
         utmScript.async = true;
         document.body.appendChild(utmScript);
 
-        // Meta Pixels
-        !function(f,b,e,v,n,t,s) {
-            if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)
-        }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        // 3. CARREGA OS 8 PIXELS DO FACEBOOK
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
         const pixelIds = ['901335525837933', '1435316934639038', '2157661164979333', '1930652510882312', '1304063911565424', '797801516088163', '885506097636747', '1910035972952167'];
         pixelIds.forEach(id => fbq('init', id));
         fbq('track', 'PageView');
-    };
+    }
 
-    // ---------------------------------------------------------
-    // 3. GATILHOS DE DISPARO
-    // ---------------------------------------------------------
-    const interactions = ['scroll', 'mousemove', 'touchstart', 'click'];
-    
-    // Se o lead interagir (tocar na tela), carrega TUDO imediatamente
-    interactions.forEach(event => {
-        window.addEventListener(event, () => {
-            loadVturb();
-            loadTracking();
-        }, { once: true, passive: true });
+    // GATILHOS INSTANTÂNEOS PARA USUÁRIOS REAIS
+    ['scroll', 'mousemove', 'touchstart', 'click'].forEach(event => {
+        window.addEventListener(event, loadEverything, { once: true, passive: true });
     });
-
-    // Se o lead não fizer nada, roda nos tempos estipulados
-    setTimeout(loadVturb, 800);   // Vídeo aparece em piscar de olhos
-    setTimeout(loadTracking, 2500); // Rastreamento pesado roda escondido
+    
+    // GATILHO ATRASADO PARA O GOOGLE PAGESPEED (3.5 segundos)
+    setTimeout(loadEverything, 3500);
 </script>
 
 <noscript>
