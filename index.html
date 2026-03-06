@@ -44,7 +44,6 @@
         
         <div class="relative w-full bg-black aspect-video shadow-md">
             <vturb-smartplayer id="vid-699de0a8f5e86dda40b4cdcc" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer> 
-            <script type="text/javascript"> var s=document.createElement("script"); s.src="https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js", s.async=!0,document.head.appendChild(s); </script>
         </div>
 
         <div class="bg-white py-3 px-4 border-b border-gray-100 flex items-center justify-center gap-2 relative z-10">
@@ -63,16 +62,6 @@
                <img src="images/cbs_logo.svg" alt="CBS" loading="lazy" class="h-12 w-auto object-contain grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
            </div>
         </div>
-
-        <script>
-          var delaySeconds = 3654;
-          var player = document.querySelector("vturb-smartplayer");
-          player.addEventListener("player:ready", function() {
-            player.displayHiddenElements(delaySeconds, [".esconder"], {
-              persist: true
-            });
-          });
-        </script>
 
         <section id="secao_pitch" class="esconder bg-[#f9f9f9] px-4 py-12 border-b border-gray-200 relative">
             <div class="max-w-5xl mx-auto">
@@ -607,40 +596,21 @@
         </footer>
     </main>
 
-    <script>
-        function updateViewerCount() {
-            const viewerElement = document.getElementById('viewer-count');
-            let currentStr = viewerElement.innerText.replace('.', '').replace(',', '');
-            let current = parseInt(currentStr);
-            let change = Math.floor(Math.random() * 85) - 35; 
-            current += change;
-            if (current < 8500) current = 8500 + Math.floor(Math.random() * 70);
-            if (current > 9999) current = 9999 - Math.floor(Math.random() * 70);
-            viewerElement.innerText = current.toLocaleString('pt-BR');
-        }
-        (function loop() {
-            var rand = Math.round(Math.random() * (5500 - 2500)) + 2500;
-            setTimeout(function() { updateViewerCount(); loop(); }, rand);
-        }());
-    </script>
-
-    <script>
-    // Flag para garantir que o código rode apenas uma vez
+   <script>
     let scriptsLoaded = false;
 
-    const loadTrackingScripts = () => {
+    const loadAllScripts = () => {
         if (scriptsLoaded) return;
         scriptsLoaded = true;
 
-        // 1. Carrega o UTMify de forma assíncrona
+        // 1. Carrega UTMify
         const utmScript = document.createElement('script');
         utmScript.src = "https://cdn.utmify.com.br/scripts/utms/latest.js";
         utmScript.setAttribute('data-utmify-prevent-subids', '');
         utmScript.async = true;
-        utmScript.defer = true;
         document.body.appendChild(utmScript);
 
-        // 2. Inicializa a Base do Meta Pixel
+        // 2. Carrega Pixels do Facebook
         !function(f,b,e,v,n,t,s) {
             if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -649,27 +619,33 @@
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)
         }(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-
-        // 3. Dispara os seus 8 Pixels simultaneamente
-        const pixelIds = [
-            '901335525837933', '1435316934639038', '2157661164979333',
-            '1930652510882312', '1304063911565424', '797801516088163',
-            '885506097636747', '1910035972952167'
-        ];
-        
+        const pixelIds = ['901335525837933', '1435316934639038', '2157661164979333', '1930652510882312', '1304063911565424', '797801516088163', '885506097636747', '1910035972952167'];
         pixelIds.forEach(id => fbq('init', id));
         fbq('track', 'PageView');
+
+        // 3. Injeta o VTurb de forma inteligente
+        const vturbScript = document.createElement('script');
+        vturbScript.src = "https://scripts.converteai.net/6e3ae2f6-ad64-483b-9bc5-bafc50ec8005/players/699de0a8f5e86dda40b4cdcc/v4/player.js";
+        vturbScript.async = true;
+        document.head.appendChild(vturbScript);
+
+        // 4. Configura o Delay do Pitch de forma segura
+        vturbScript.onload = () => {
+            let player = document.querySelector("vturb-smartplayer");
+            if(player) {
+                player.addEventListener("player:ready", function() {
+                    player.displayHiddenElements(3654, [".esconder"], { persist: true });
+                });
+            }
+        };
     };
 
-    // 4. Gatilhos de disparo: Interação do usuário OU timer de 3 segundos
+    // Dispara com interação do usuário OU após 2.5 segundos (proteção para autoplay)
     const userInteractions = ['scroll', 'mousemove', 'touchstart', 'click'];
-    
     userInteractions.forEach(event => {
-        window.addEventListener(event, loadTrackingScripts, { once: true, passive: true });
+        window.addEventListener(event, loadAllScripts, { once: true, passive: true });
     });
-
-    // Se o usuário ficar parado olhando a tela sem mexer nada, carrega após 3s
-    setTimeout(loadTrackingScripts, 3000);
+    setTimeout(loadAllScripts, 2500);
 </script>
 
 <noscript>
